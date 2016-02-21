@@ -1,5 +1,5 @@
-alpine-devel-x86_64
-===================
+alpine-devel-howto
+==================
 
 WHAT IS THIS?
 -------------
