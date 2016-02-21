@@ -5,7 +5,7 @@ WHAT IS THIS?
 -------------
 This is my way to build alpinelinux packages using docker containers.
 
-I use the bash script `alpine-pkg-build` to generate my keys, build packages and
+I use the bash script `alpine-build-pkg` to generate my keys, build packages and
 run into a shell in them.
 
 Just clone this repo and make a symbolic link to your `~/bin/` or
@@ -73,7 +73,7 @@ BUILDING A PACKAGE
 ------------------
 Go to the directory where your `APKBUILD` lives and run the `alpine-build-pkg`.
 
-    $ alpine-pkg-build
+    $ alpine-build-pkg
 
 That will create a `pkgs/` directory in your `$PWD` and inside you will have a
 folder with the name of your architecture and inside there will be an
@@ -115,7 +115,7 @@ something like this to get it built correctly:
     $ cd libtorrent/
     $ alpine-build-pkg -r ../repo
     $ cd ../rtorrent/
-    $ alpine-pkg-build -r ~/build/repo
+    $ alpine-build-pkg -r ~/build/repo
 
 Since they both shared the same repository directory `rtorrent` was able to use
 the `libtorrent-dev.apk` you just build and it will even have a
