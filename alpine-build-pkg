@@ -27,7 +27,7 @@ Options:
   --version                   Show versions.
 "
 declare version="
-Version: 2.1.0.
+Version: 2.1.1.
 Licensed under the MIT terms.
 "
 
@@ -51,7 +51,10 @@ evaluate_build_options() {
       -v)
         image_ver="$2"; shift; shift;;
       -r)
-        [[ -d "$2" ]] && repo_dir=$(cd "$2" && pwd);
+        if [[ ! -d "$2" ]]; then
+          mkdir -p "$2"
+        fi
+        repo_dir=$(cd "$2" && pwd)
         shift; shift;;
       -c)
         [[ -d "$2" ]] && conf_dir=$(cd "$2" && pwd);
