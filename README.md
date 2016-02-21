@@ -12,7 +12,7 @@ Just clone this repo and make a symbolic link to your `~/bin/` or
 `/usr/local/bin/` and you should be ready to go.
 
 This is supposed to be used together with
-[docker-alpine-devel](https://github.com/resnullius/docker-alpine-devel) and at
+[docker-alpine-devel](https://github.com/resnullius/docker-alpine-devel) and
 it works with both: `x86_64` and the `armv7l` version!. It supports alpine's
 versions: `3.2`, `3.3` and `edge`.
 
