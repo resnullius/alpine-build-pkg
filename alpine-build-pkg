@@ -31,10 +31,14 @@ Version: 2.0.0.
 Licensed under the MIT terms.
 "
 
+declare ARCH
+ARCH=$(uname -m)
+
 declare keys_dir=${KEYS_DIR:-~/.alpine/keys}
 declare conf_dir=${CONF_DIR:-~/.alpine/conf}
 declare repo_dir=${REPO_DIR:-$PWD/pkgs}
 declare src_dir=${SRC_DIR:-$PWD}
+declare image_name=${IMAGE_NAME:-resnullius/alpine-devel}
 [ -d "$repo_dir" ] && repo_dir=$(cd "$repo_dir" && pwd)
 [ -d "$src_dir" ] && src_dir=$(cd "$src_dir" && pwd)
 
@@ -86,6 +90,12 @@ basic_check() {
   echo "Everything in place"
 }
 
+determine_image_name() {
+  if [[ "$ARCH" != "x86_64" ]]; then
+    image_name+="-$ARCH"
+  fi
+}
+
 # shellcheck disable=SC2086
 run_docker() {
   docker run \
@@ -95,12 +105,13 @@ run_docker() {
     -v "$repo_dir":/opt/repo \
     -v "$conf_dir":/opt/conf \
     -v "$keys_dir":/opt/keys \
-    resnullius/alpine-devel:"$image_ver"
+    $image_name:"$image_ver"
 }
 
 build() {
   evaluate_build_options "$@"
   basic_check
+  determine_image_name
   run_docker
 }
 
