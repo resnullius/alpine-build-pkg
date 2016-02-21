@@ -13,8 +13,8 @@ Just clone this repo and make a symbolic link to your `~/bin/` or
 
 This is supposed to be used together with
 [docker-alpine-devel](https://github.com/resnullius/docker-alpine-devel) and at
-the moment only works for `x86_64`. It supports alpine versions: 3.2, 3.3 and
-edge.
+it works with both: `x86_64` and the `armv7l` version!. It supports alpine's
+versions: `3.2`, `3.3` and `edge`.
 
 It expects you to have a `~/.alpine` directory with subdirectories `keys` and
 `conf`. You can change this with arguments to the script.
