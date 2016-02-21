@@ -3,20 +3,21 @@ alpine-devel-howto
 
 WHAT IS THIS?
 -------------
-This is the way to build alpinelinux packages using docker containers. This is
-an example, is should be taken as a base and the `build.bash.base` be modified
-according to your needs and put on your `~/bin/` or `/usr/local/bin/`.
+This is my way to build alpinelinux packages using docker containers.
 
-The docker containers that uses is `resnullius/alpine-devel` and the tags
-available are `3.2`, `3.3` and `edge`. It can be used with
-`resnullius/alpine-devel-armv7l` as well (it has the same tags), you just need
-to change the docker image's name.
+I use the bash script `alpine-pkg-build` to generate my keys, build packages and
+run into a shell in them.
 
-There is a script for helping you figure out how to create your developer keys
-called `createkeys.bash`.
+Just clone this repo and make a symbolic link to your `~/bin/` or
+`/usr/local/bin/` and you should be ready to go.
+
+This is supposed to be used together with
+[docker-alpine-devel](https://github.com/resnullius/docker-alpine-devel) and at
+the moment only works for `x86_64`. It supports alpine versions: 3.2, 3.3 and
+edge.
 
 It expects you to have a `~/.alpine` directory with subdirectories `keys` and
-`conf`.
+`conf`. You can change this with arguments to the script.
 
 UPDATE THE ABUILD.CONF
 ----------------------
@@ -27,11 +28,13 @@ you are not building for the architecture `x86_64`. Remember to add it into your
 
 GENERATING YOUR KEYS
 --------------------
-After saving your `abuild.conf` into `~/.alpine/conf/` and created
-`~/.alpine/keys` you can run `bash createkeys.bash` from this repo, the output
-should be something like:
+**You just need to do this once.**
 
-    $ bash createkeys.bash
+After saving your `abuild.conf` into `~/.alpine/conf/` and created
+`~/.alpine/keys` you can run `bash alpine-build-pkg gen-key` from this repo,
+the output should be something like:
+
+    $ bash alpine-build-pkg gen-key
     Generating RSA private key, 2048 bit long modulus
     ....................+++
     ................................................................+++
@@ -59,13 +62,16 @@ sign with those all your packages.
 Add the line that starts with `PACKAGER_PRIVKEY` to your `abuild.conf`, the one
 you just saved into `~/.alpine/conf/abuild.conf`.
 
+You can change where the keys are saved with the `-k` argument, so doing `bash
+alpine-build-pkg gen-key -k .` would save the keys in your `$PWD`. The other
+argument that accepts is `-c` to tell where should look for the `abuild.conf`
+file. See more with `alpine-build-pkg --help`.
+
 **You just need to do this once.**
 
 BUILDING A PACKAGE
 ------------------
-Go to the directory where your `APKBUILD` lives and run the script you renamed
-from `build.bash.base`, in my case is called `alpine-pkg-build` on my `~/bin/`
-so just:
+Go to the directory where your `APKBUILD` lives and run the `alpine-build-pkg`.
 
     $ alpine-pkg-build
 
@@ -73,13 +79,24 @@ That will create a `pkgs/` directory in your `$PWD` and inside you will have a
 folder with the name of your architecture and inside there will be an
 `APKINDEX.tar.gz` and the `.apk`s created by your `APKBUILD`.
 
-There are more options for building, just keep reading other titles.
+Right now, it defaults to build things with alpine's version 3.3, which is the
+current stable, but you can change it to 3.2 or edge by using the `-v` flag
+like this:
+
+    $ alpine-build-pkg -v edge
+
+There are more options for building, just keep reading other titles and check
+out what's in `alpine-build-pkg --help`.
 
 RUNNING THE CONTAINER
 ---------------------
-There's an extra `run.bash` script that just mounts everything for you and
-leaves you in a `sh` shell inside the container so you can test things out
-there.
+There's an extra option on `alpine-build-pkg`, maybe you want to get into the
+container and run `entrypoint.sh` by yourself or do other stuff there, you can
+get into it's shell by running:
+
+    $ alpine-build-pkg run
+
+It accepts arguments as well. See which ones with `alpine-build-pkg --help`.
 
 PLAYING WITH THE OPTIONS ON THE BUILD AND RUN SCRIPTS
 -----------------------------------------------------
@@ -96,9 +113,9 @@ And inside each directory there's an `APKBUILD`, so you would end up doing
 something like this to get it built correctly:
 
     $ cd libtorrent/
-    $ REPO_DIR=~/build/repo alpine-pkg-build
+    $ alpine-build-pkg -r ../repo
     $ cd ../rtorrent/
-    $ REPO_DIR=~/build/repo alpine-pkg-build
+    $ alpine-pkg-build -r ~/build/repo
 
 Since they both shared the same repository directory `rtorrent` was able to use
 the `libtorrent-dev.apk` you just build and it will even have a
@@ -111,6 +128,10 @@ your `~/build/repo` more people can just put that URL on their
 PS: Remember, if they don't have your `.rsa.pub` key in their `/etc/apk/keys`
 they will need to make `apk add --allow-untrusted rtorrent` in order to actually
 be able to install the package you built.
+
+PS2: Did you saw `-r` supports relative paths? Yes, it does! And all the path
+arguments too. Check what other options are available with `alpine-build-pkg
+--help`.
 
 AUTHOR AND LICENSE
 ------------------
