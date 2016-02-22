@@ -6,7 +6,7 @@ Script for building alpine pkgs using resnullius/alpine-devel docker's images.
 Usage:
   alpine-build-pkg run [-v <version>] [-r <path>] [-c <path>] [-k <path>]
   alpine-build-pkg gen-key [-c <path>] [-k <path>]
-  alpine-build-pkg [-v 3.3] [-r <path>] [-c <path>] [-k <path>] [-s <path>] \
+  alpine-build-pkg [-v 3.3] [-r <path>] [-c <path>] [-k <path>] [-s <path>]
     [-e cmd]
   alpine-build-pkg --version
   alpine-build-pkg -h | --help
@@ -23,7 +23,7 @@ Options:
   --version       Show versions.
 "
 declare version="
-Version: 2.1.2.
+Version: 2.1.3.
 Licensed under the MIT terms.
 "
 
