@@ -19,6 +19,9 @@ versions: `3.2`, `3.3` and `edge`.
 It expects you to have a `~/.alpine` directory with subdirectories `keys` and
 `conf`. You can change this with arguments to the script.
 
+Want to know more about my stuff for alpine? [Check
+here](https://github.com/ghostbar/alpine-devel).
+
 UPDATE THE ABUILD.CONF
 ----------------------
 First, update your `abuild.conf`, you can copy from the one shipped in this
