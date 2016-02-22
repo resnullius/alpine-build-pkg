@@ -12,22 +12,18 @@ Usage:
   alpine-build-pkg -h | --help
 
 Options:
-  -v                          Alpine tag to use, defaults to 3.3.
-  -r                          Path to repo, final destination of the package
-                              being built and used as extra repo during the
-                              build process.
-  -c                          Path to the abuild.conf file, defaults to
-                              ~/.alpine/conf.
-  -k                          Path to the developer keys, defaults to
-                              ~/.alpine/keys.
-  -s                          Path to the source, defaults to current
-                              directory.
-  -e                          Change the entrypoint to that value.
-  -h --help                   Show this screen.
-  --version                   Show versions.
+  -v              Alpine tag to use, defaults to 3.3.
+  -r              Path to repo, final destination of the package being built
+                  and used as extra repo during the build process.
+  -c              Path to the abuild.conf file, defaults to ~/.alpine/conf.
+  -k              Path to the developer keys, defaults to ~/.alpine/keys.
+  -s              Path to the APKBUILD, defaults to current directory.
+  -e              Change the entrypoint to that value.
+  -h --help       Show this screen.
+  --version       Show versions.
 "
 declare version="
-Version: 2.1.1.
+Version: 2.1.2.
 Licensed under the MIT terms.
 "
 
