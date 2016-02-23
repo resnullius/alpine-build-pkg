@@ -42,32 +42,31 @@ declare image_ver="3.3"
 declare entrypoint
 
 evaluate_build_options() {
-  while test -n "$1"; do
-    case "$1" in
-      -v)
-        image_ver="$2"; shift; shift;;
-      -r)
-        if [[ ! -d "$2" ]]; then
-          mkdir -p "$2"
-        fi
-        repo_dir=$(cd "$2" && pwd)
-        shift; shift;;
-      -c)
-        [[ -d "$2" ]] && conf_dir=$(cd "$2" && pwd);
-        shift; shift;;
-      -k)
-        [[ -d "$2" ]] && keys_dir=$(cd "$2" && pwd);
-        shift; shift;;
-      -s)
-        [[ -d "$2" ]] && src_dir=$(cd "$2" && pwd);
-        shift; shift;;
-      -e)
-        entrypoint="--entrypoint $2"
-        if [[ "$2" == "/bin/sh" ]]; then
+  while getopts ":v:r:c:k:s:e:" opt "$@"; do
+    case "$opt" in
+      v)
+        image_ver="$OPTARG";;
+      r)
+        if [ ! -d "$OPTARG" ]; then mkdir -p "$OPTARG"; fi
+        repo_dir=$(cd "$OPTARG" && pwd);;
+      c)
+        [ ! -d "$OPTARG" ] && echo "No config dir found" && exit 1
+        conf_dir=$(cd "$OPTARG" && pwd);;
+      k)
+        [ ! -d "$OPTARG" ] && echo "No keys dir found" && exit 1
+        keys_dir=$(cd "$OPTARG" && pwd);;
+      s)
+        [ ! -d "$OPTARG" ] && echo "No source dir found" && exit 1
+        src_dir=$(cd "$OPTARG" && pwd);;
+      e)
+        entrypoint="--entrypoint $OPTARG"
+        if [ "$OPTARG" == "/bin/sh" ]; then
           entrypoint+=" -ti"
         fi
         shift; shift;;
-      *) shift;;
+      \?) echo "Invalid option -$OPTARG ignored" >&2 ;;
+      :)
+        echo "Option -$OPTARG requires an argument" >&2 && exit 1;;
     esac
   done
   echo "Will build using:"
