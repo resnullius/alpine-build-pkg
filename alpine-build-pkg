@@ -23,7 +23,7 @@ Options:
   --version       Show versions.
 "
 declare version="
-Version: 2.1.5.
+Version: 2.2.0.
 Licensed under the MIT terms.
 "
 
@@ -96,6 +96,11 @@ determine_image_name() {
 
 # shellcheck disable=SC2086
 run_docker() {
+  local -a command
+  if [ -z "$entrypoint" ]; then
+    command=("build")
+  fi
+
   docker run \
     $entrypoint \
     --rm \
@@ -103,7 +108,7 @@ run_docker() {
     -v "$repo_dir":/opt/repo \
     -v "$conf_dir":/opt/conf \
     -v "$keys_dir":/opt/keys \
-    $image_name:"$image_ver"
+    $image_name:"$image_ver" "${command[@]}"
 }
 
 build() {
