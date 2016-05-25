@@ -101,6 +101,8 @@ run_docker() {
     command=("build")
   fi
 
+  docker pull "$image_name:$image_ver"
+
   docker run \
     $entrypoint \
     --rm \
