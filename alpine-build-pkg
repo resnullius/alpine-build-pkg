@@ -5,9 +5,10 @@ Script for building alpine pkgs using resnullius/alpine-devel docker's images.
 
 Usage:
   alpine-build-pkg run [-v <version>] [-r <path>] [-c <path>] [-k <path>]
+    [-K <path>]
   alpine-build-pkg gen-key [-c <path>] [-k <path>]
   alpine-build-pkg [-v 3.3] [-r <path>] [-c <path>] [-k <path>] [-s <path>]
-    [-e cmd]
+    [-e cmd] [-K <path>]
   alpine-build-pkg --version
   alpine-build-pkg -h | --help
 
@@ -17,6 +18,7 @@ Options:
                   and used as extra repo during the build process.
   -c              Path to the abuild.conf file, defaults to ~/.alpine/conf.
   -k              Path to the developer keys, defaults to ~/.alpine/keys.
+  -K              Path to extra keys to be added, just public ones.
   -s              Path to the APKBUILD, defaults to current directory.
   -e              Change the entrypoint to that value.
   -h --help       Show this screen.
@@ -34,6 +36,7 @@ declare keys_dir="${KEYS_DIR:-$HOME/.alpine/keys}"
 declare conf_dir="${CONF_DIR:-$HOME/.alpine/conf}"
 declare repo_dir="${REPO_DIR:-$PWD/pkgs}"
 declare src_dir="${SRC_DIR:-$PWD}"
+declare extra_keys_dir
 declare image_name="${IMAGE_NAME:-resnullius/alpine-devel}"
 [ -d "$repo_dir" ] && repo_dir=$(cd "$repo_dir" && pwd)
 [ -d "$src_dir" ] && src_dir=$(cd "$src_dir" && pwd)
@@ -55,6 +58,9 @@ evaluate_build_options() {
       k)
         [ ! -d "$OPTARG" ] && echo "No keys dir found" && exit 1
         keys_dir=$(cd "$OPTARG" && pwd);;
+      K)
+        [ ! -d "$OPTARG" ] && echo "No extra keys dir found" && exit 1
+        extra_keys_dir=$(cd "$OPTARG" && pwd);;
       s)
         [ ! -d "$OPTARG" ] && echo "No source dir found" && exit 1
         src_dir=$(cd "$OPTARG" && pwd);;
@@ -74,6 +80,7 @@ evaluate_build_options() {
   echo "Repo dir: $repo_dir"
   echo "Config dir: $conf_dir"
   echo "Keys dir: $keys_dir"
+  [[ ! -z "$extra_keys_dir" ]] && echo "Extra keys dir: $extra_keys_dir"
   echo "Source dir: $src_dir"
   if [ -n "$entrypoint" ]; then
     echo "Entrypoint changed to $entrypoint"
@@ -101,16 +108,24 @@ run_docker() {
     command=("build")
   fi
 
+  local -a docker_args
+
+  docker_args=("-v" "$src_dir:/opt/src")
+  docker_args+=("-v" "$repo_dir:/opt/repo")
+  docker_args+=("-v" "$conf_dir:/opt/conf")
+  docker_args+=("-v" "$keys_dir:/opt/keys")
+
+  if [ ! -z "$extra_keys_dir" ]; then
+    docker_args+=("-v" "$extra_keys_dir")
+  fi
+
   docker pull "$image_name:$image_ver"
 
   docker run \
     $entrypoint \
     --rm \
-    -v "$src_dir":/opt/src \
-    -v "$repo_dir":/opt/repo \
-    -v "$conf_dir":/opt/conf \
-    -v "$keys_dir":/opt/keys \
-    $image_name:"$image_ver" "${command[@]}"
+    "${docker_args[@]}" \
+    "$image_name":"$image_ver" "${command[@]}"
 }
 
 build() {
