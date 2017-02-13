@@ -45,7 +45,7 @@ declare image_ver="3.3"
 declare entrypoint
 
 evaluate_build_options() {
-  while getopts ":v:r:c:k:s:e:" opt "$@"; do
+  while getopts ":v:r:c:k:K:s:e:" opt "$@"; do
     case "$opt" in
       v)
         image_ver="$OPTARG";;
