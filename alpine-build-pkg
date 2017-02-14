@@ -5,10 +5,11 @@ Script for building alpine pkgs using resnullius/alpine-devel docker's images.
 
 Usage:
   alpine-build-pkg run [-v <version>] [-r <path>] [-c <path>] [-k <path>]
-    [-K <path>]
+    [-K <path>] [-x https://other.repo/path] [-x https://yet.another/repo]
   alpine-build-pkg gen-key [-c <path>] [-k <path>]
   alpine-build-pkg [-v 3.3] [-r <path>] [-c <path>] [-k <path>] [-s <path>]
-    [-e cmd] [-K <path>]
+    [-e cmd] [-K <path>] [-x https://other.repo/path]
+    [-x https://yet.another/repo]
   alpine-build-pkg --version
   alpine-build-pkg -h | --help
 
@@ -21,6 +22,7 @@ Options:
   -K              Path to extra keys to be added, just public ones.
   -s              Path to the APKBUILD, defaults to current directory.
   -e              Change the entrypoint to that value.
+  -x              Add extra repos. Supports multiple repos.
   -h --help       Show this screen.
   --version       Show versions.
 "
@@ -37,6 +39,7 @@ declare conf_dir="${CONF_DIR:-$HOME/.alpine/conf}"
 declare repo_dir="${REPO_DIR:-$PWD/pkgs}"
 declare src_dir="${SRC_DIR:-$PWD}"
 declare extra_keys_dir
+declare -a extra_repos
 declare image_name="${IMAGE_NAME:-resnullius/alpine-devel}"
 [ -d "$repo_dir" ] && repo_dir=$(cd "$repo_dir" && pwd)
 [ -d "$src_dir" ] && src_dir=$(cd "$src_dir" && pwd)
@@ -45,7 +48,7 @@ declare image_ver="3.3"
 declare entrypoint
 
 evaluate_build_options() {
-  while getopts ":v:r:c:k:K:s:e:" opt "$@"; do
+  while getopts ":v:r:c:k:K:s:e:x:" opt "$@"; do
     case "$opt" in
       v)
         image_ver="$OPTARG";;
@@ -64,6 +67,8 @@ evaluate_build_options() {
       s)
         [ ! -d "$OPTARG" ] && echo "No source dir found" && exit 1
         src_dir=$(cd "$OPTARG" && pwd);;
+      x)
+        extra_repos+=("$OPTARG");;
       e)
         entrypoint="--entrypoint $OPTARG"
         if [ "$OPTARG" == "/bin/sh" ]; then
@@ -106,6 +111,11 @@ run_docker() {
   local -a command
   if [ -z "$entrypoint" ]; then
     command=("build")
+    if [ ! "${#extra_repos[@]}" -eq 0 ]; then
+      for repo in "${extra_repos[@]}"; do
+        command+=("-x" "$repo")
+      done
+    fi
   fi
 
   local -a docker_args
