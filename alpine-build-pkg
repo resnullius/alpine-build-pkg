@@ -129,8 +129,17 @@ run_docker() {
     docker_args+=("-v" "$extra_keys_dir")
   fi
 
-  docker pull "$image_name:$image_ver"
+  if [ "$DEBUG" ]; then
+  echo docker pull "$image_name:$image_ver"
+  echo docker run
+  echo   $entrypoint
+  echo   --rm
+  echo   "${docker_args[@]}"
+  echo   "$image_name":"$image_ver" "${command[@]}"
+  return 0
+  fi
 
+  docker pull "$image_name:$image_ver"
   docker run \
     $entrypoint \
     --rm \
