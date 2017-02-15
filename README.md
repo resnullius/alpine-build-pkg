@@ -1,5 +1,5 @@
-alpine-devel-howto
-==================
+alpine-build-pkg
+================
 
 WHAT IS THIS?
 -------------
