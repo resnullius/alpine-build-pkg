@@ -28,7 +28,7 @@ Options:
   --version       Show versions.
 "
 declare version="
-Version: 2.2.0.
+Version: 2.3.0.
 Licensed under the MIT terms.
 "
 
