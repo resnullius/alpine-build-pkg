@@ -14,7 +14,8 @@ Usage:
   alpine-build-pkg -h | --help
 
 Options:
-  -v              Alpine tag to use, defaults to 3.3.
+  -v              Alpine tag to use, defaults to edge. Can use 3.3, 3.4, 3.5
+                  too.
   -r              Path to repo, final destination of the package being built
                   and used as extra repo during the build process.
   -c              Path to the abuild.conf file, defaults to ~/.alpine/conf.
@@ -44,7 +45,7 @@ declare image_name="${IMAGE_NAME:-resnullius/alpine-devel}"
 [ -d "$repo_dir" ] && repo_dir=$(cd "$repo_dir" && pwd)
 [ -d "$src_dir" ] && src_dir=$(cd "$src_dir" && pwd)
 
-declare image_ver="3.3"
+declare image_ver="edge"
 declare entrypoint
 
 evaluate_build_options() {
